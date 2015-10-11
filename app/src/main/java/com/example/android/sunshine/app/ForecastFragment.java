@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.content.pm.PackageManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -94,6 +95,19 @@ public class ForecastFragment extends Fragment {
         if (id == R.id.action_refresh) {
             updateWeather();
             return true;
+        } else if (id == R.id.action_map) {
+            final String BASE_URL = "geo:0,0";
+            final String QUERY_PARAM = "q";
+
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String location = sharedPref.getString(getString(R.string.pref_location_key),
+                    getString(R.string.pref_location_default));
+
+            Uri map_location_uri = Uri.parse(BASE_URL).buildUpon()
+                    .appendQueryParameter(QUERY_PARAM, location)
+                    .build();
+
+            showMap(map_location_uri);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -106,6 +120,14 @@ public class ForecastFragment extends Fragment {
         String unit = sharedPref.getString(getString(R.string.pref_units_key),
                 getString(R.string.pref_units_default));
         weatherTask.execute(location, unit);
+    }
+
+    private void showMap(Uri geoLocation) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(geoLocation);
+        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivity(intent);
+        }
     }
 
     @Override

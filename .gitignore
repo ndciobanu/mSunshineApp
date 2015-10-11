@@ -1,5 +1,7 @@
 .gradle
 .DS_Store
+./app/src/main/res/values/private_keys.xml
+
 
 # built application files
 *.apk
